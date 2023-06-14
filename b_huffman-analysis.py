@@ -33,21 +33,76 @@ def huffman(message:str) -> float:
                             # item -> a binary encoding
 
 
-    # STEP 0
-    ## defining our data structures
+    # STEP 0 - TODO
+## defining our data structures
+    class Node: # NOT given to students
+        letter: str
+        weight: int
+        left: any
+        right: any
+        
+        def __init__(self, letter, w, l, r):
+            self.letter = letter
+            self.weight = w
+            self.left = l
+            self.right = r
+
+
     ## defining operations
+### recursively traverses the huffman tree to record the codes
+    def retrieve_codes(v: Node, path: str=''):
+        if v.letter != None:
+            coding[v.letter] = path
+        else:
+            retrieve_codes(v.left, path + '0') 
+            retrieve_codes(v.right, path + '1')
 
     # STEP 1
-    ## counting the frequencies
+    ## counting the frequencies - TODO
+    for i in message:
+        if i not in freq:
+            freq[i] = 1
+        else:
+            freq[i] += 1
+
 
     # STEP 2
-    ## initialize the nodes
+    ## initialize the nodes - TODO
+    for letter in freq:
+        nodes.append(Node(letter, freq[letter], None, None))
 
-    # STEP 3
+
+    # STEP 3 - TODO
     ## combine each nodes until there's only one item in the nodes list
+    while len(nodes) > 1:
+        ## sort based on weight
+        nodes.sort(key=lambda x: x.weight, reverse=True)
+
+        ## get the first min
+        min_a: Node = nodes.pop()
+
+        ## get the second min
+        min_b: Node = nodes.pop()
+
+        ## combine the two
+        combined: Node = Node(letter = None,
+                            w = min_a.weight + min_b.weight,
+                            l = min_a,
+                            r = min_b)
+
+        ## put the combined nodes back in the list of nodes
+        nodes.append(combined)
+
 
     # STEP 4
     ## reconstruct the codes
+    huff_root = nodes[0]
+    retrieve_codes(huff_root)
+    result: str = '' # TODO (hint coding[letter] -> code)
+    for letter in coding:
+        for j in message:
+            if letter == j:
+                result = result + str(coding[i])
 
     # STEP 5
     ## analyize compression performance
@@ -59,52 +114,82 @@ def huffman(message:str) -> float:
 
 # LYRICS
 plt.subplot(2, 1, 1)
-plt.suptitle('Lab 7 - Stapleton Analyzing Huffman')
+plt.suptitle('Lab 7 - Kuhn Analyzing Huffman')
+plt.xlabel('length of message')
+plt.ylabel('compression %')
+#plt.set_drawstyle('-.')
 
 MAX_N: int = int(128 * 3 / 2)
 
 # PLOT 1
 ## POKEMON
 ratios: list = list()
+length: list = list()
 for i in range(1, MAX_N):
     sub_message = POKEMON_LYRICS[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+    length.append(len(sub_message))
+plt.plot(length, ratios[:MAX_N], label = 'Pokemon', color = 'r',)
 
-## JIGGLE JIGGLE
+# JIGGLE JIGGLE
 ratios: list = list()
+length: list = list()
 for i in range(1, MAX_N):
     sub_message = JIGGLE_JIGGLE[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+    length.append(len(sub_message))
+plt.plot(length, ratios[:MAX_N], label = 'Jiggle Jiggle', color = 'g')
+
 
 ## ALPHABET
 ratios: list = list()
+length: list = list()
 for i in range(1, MAX_N):
     sub_message = ALPHABET[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+    length.append(len(sub_message))
+plt.plot(length, ratios[:MAX_N], label = 'Alphabet', color = 'b')
+
+plt.legend()
+
 
 # PLOT 2
 plt.subplot(2, 1, 2)
 
 ## SITH CODE
 ratios: list = list()
+length: list = list()
 for i in range(1, MAX_N):
     sub_message = SITH_CODE[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+    length.append(len(sub_message))
+plt.plot(length, ratios[:MAX_N], label = 'Sith Code', color = 'r')
 
 ## GREEN LATERN'S OATH
 ratios: list = list()
+length: list = list()
 for i in range(1, MAX_N):
     sub_message = GREEN_LATTERN[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+    length.append(len(sub_message))
+plt.plot(length, ratios[:MAX_N], label = 'Green Lantern', color = 'g')
 
 ## JEDI CODE
 ratios: list = list()
+length: list = list()
 for i in range(1, MAX_N):
     sub_message = JEDI_CODE[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+    length.append(len(sub_message))
+plt.plot(length, ratios[:MAX_N], label = 'Jedi Code', color = 'b')
+plt.legend()
+
+
+plt.savefig('./figs/lab7_kuhn.png')
+
